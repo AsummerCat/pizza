@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.linjingc.dao.freezerDao">
+
+    <!-- 可以解决model属性名与数据表中column列名不一致问题 jdbcType一定要大写 -->
+    <resultMap type="top.linjingc.vo.freezer" id="freezerMap">
+        <id property="id" column="id" javaType="Long" jdbcType="INTEGER"/>
+        <result property="name" column="name" javaType="string" jdbcType="VARCHAR"/>
+        <result property="thawingTime" column="Thawing_time" javaType="string" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" javaType="Date" jdbcType="DATE"/>
+        <result property="updateTime" column="update_time" javaType="Date" jdbcType="DATE"/>
+        <result property="endTime" column="end_time" javaType="string" jdbcType="VARCHAR"/>
+        <result property="type" column="type" javaType="Long" jdbcType="INTEGER"/>
+        <result property="thawingMaxCount" column="Thawing_maxCount" javaType="string" jdbcType="VARCHAR"/>
+        <result property="thawingQuick" column="Thawing_quick" javaType="string" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--
+    注意这里的result，如果column == property 则可以直接返回Java object。
+    如果属性名与列名不一致，解决方法如下：
+    1. 使用resultMap;
+    2.返回hashmap ;
+    3.查询语句使用别名
+    -->
+    <!--<select id="getUser" parameterType="int" resultMap="freezerMap">-->
+        <!--select * from t_user where id=#{id}-->
+    <!--</select>-->
+
+    <!--<delete id="deleteUser" parameterType="int" >-->
+        <!--delete from t_user where id=#{id}-->
+    <!--</delete>-->
+
+
+    <!--<update id="updateUser" parameterType="top.linjingc.vo.freezer" >-->
+        <!--update t_user set username=#{name},age=#{age} where id=#{id}-->
+    <!--</update>-->
+
+    <!--<insert id="insertUser" parameterType="top.linjingc.vo.freezer" >-->
+        <!--insert into t_user(username,age) values(#{name},#{age})-->
+    <!--</insert>-->
+
+    <!-- model's attr(name) different from column(username), so the result use UserMap -->
+
+    <select id="list"  resultMap="freezerMap">
+        select * from freezer
+    </select>
+    <select id="findName"  resultMap="freezerMap">
+        select *
+        from freezer where type=#{type} and name  LIKE '%${name}%'
+    </select>
+
+</mapper>

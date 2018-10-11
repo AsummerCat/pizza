@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>必胜客demo</title>
+
+<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+
+<div id="top-image">
+  <div id="content" class="container center-block">
+    <div class="jumbotron">
+      <div class="container">
+        <h1>搜索功能</h1>
+        <div class="input-group input-group-lg" style="width: 50%;height: 50%">
+          <span class="input-group-addon" id="sizing-addon1">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+          <input type="text" class="form-control" placeholder="输入关键词" aria-describedby="sizing-addon1" id="TradeName">
+          <span class="input-group-btn">
+          <button class="btn btn-default" type="button" onclick="SearchName()">搜 索</button>
+          </span> </div>
+        <input type="radio" name="type" value="1" CHECKED/>&emsp;冷藏库(解冻类,湿货)&emsp;
+        <input type="radio" name="type" value="2"/>&emsp;快速解冻参照表&emsp;
+
+        <br>
+        <br>
+        <div id="info" style="color: black">
+          这里显示查询结果
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/ios-parallax.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#top-image').iosParallax({
+	movementFactor: 50
+  });
+});</script>
+<script>
+    function SearchName(){
+    var data1={};
+       var name= $('#TradeName').val();
+        var type=$("input[name='type']:checked").val();
+       data1.name=name;
+       data1.type=type;
+        $.ajax({
+            type: "POST",
+            contentType: "application/json;charset=UTF-8",
+            url:"/freezer/goFrzzer",
+            data: JSON.stringify(data1),
+            dataType: 'json',
+            async: true,
+            success:function(data) {
+                if(data.data.length>0){
+                    if(type==1){
+                        var html="";
+                        $('#info').html("");
+                        var free=data.data;
+                        for (var i = 0; i < free.length; i++) {
+                            html+=""
+                            html+="<div>"
+                            html+="<font style='color: #e3e3e3'>品名:</font>&emsp;<span style='color: black'>"+free[i].name+"</span>&emsp;&emsp;"
+                           if(free[i].thawingTime!=null&&free[i].thawingTime!=''&&free[i].thawingTime!=undefined){
+                               html+="<font style='color: #e3e3e3'>解冻时间:</font>&emsp;<span style='color:black'>"+free[i].thawingTime+"</span>&emsp;&emsp;"
+                           }
+                            html+="<font style='color: #e3e3e3'>存储时间:</font>&emsp;<span style='color: black'>"+free[i].endTime+"</span>&emsp;&emsp;"
+                            html+="</div>"
+                            html+="<hr style='height:1px;border:none;border-top:1px solid red;' />";
+                        }
+                        $('#info').append(html);
+                    }else if(type==2){
+                        var html1="";
+                        $('#info').html("");
+                        var free=data.data;
+                        for (var i = 0; i < free.length; i++) {
+                            console.log(data);//打印服务端返回的数据(调试用)
+                            html1 += "<div>"
+                            html1 += "<font style='color: #e3e3e3'>原料:</font>&emsp;<span style='color: black'>" + free[i].name + "</span>&emsp;&emsp;</div>"
+                            html1 += "<div><font style='color: #e3e3e3'>解冻时间:</font>&emsp;<span style='color:black'>" + free[i].thawingQuick + "</span>&emsp;&emsp;</div>"
+                            html1 += "<div><font style='color: #e3e3e3'>解冻量Max:</font>&emsp;<span style='color: black'>" + free[i].thawingMaxCount + "</span>&emsp;&emsp;"
+                            html1 += "<div><font style='color: #e3e3e3'>储存时间(台面冷井):</font>&emsp;<span style='color: black'>" + free[i].endTime + "</span>&emsp;&emsp;"
+                            html1 += "</div>"
+                            html1+="<hr style='height:1px;border:none;border-top:1px solid red;'/>";
+                        }
+                        $('#info').append(html1);
+                    }
+                }else{
+                    var html="";
+                    $('#info').html("");
+                    html+="<span style='color: #e3e3e3'>暂无该数据,请重新输入</span>&emsp;&emsp;"
+                    $('#info').append(html);
+                }
+            }
+        });
+    }
+    Date.prototype.format = function(fmt) {
+        var o = {
+            "M+" : this.getMonth()+1,                 //月份
+            "d+" : this.getDate(),                    //日
+            "h+" : this.getHours(),                   //小时
+            "m+" : this.getMinutes(),                 //分
+            "s+" : this.getSeconds(),                 //秒
+            "q+" : Math.floor((this.getMonth()+3)/3), //季度
+            "S"  : this.getMilliseconds()             //毫秒
+        };
+        if(/(y+)/.test(fmt)) {
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+        }
+        for(var k in o) {
+            if(new RegExp("("+ k +")").test(fmt)){
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+            }
+        }
+        return fmt;
+    }
+
+</script>
+</div>
+</body>
+</html>
